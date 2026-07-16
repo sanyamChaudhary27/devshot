@@ -52,6 +52,19 @@ const deltaSummary = (state: RuntimeState, choice: Choice | undefined): string |
   return changes.length > 0 ? changes.join(" · ") : undefined;
 };
 
+const decisionTraceFor = (state: RuntimeState): TrialPlayerView["decisionTrace"] =>
+  state.selectedChoiceIds.flatMap((id) => {
+    const choice = state.scenario.nodes
+      .flatMap((node) => node.kind === "scene" ? node.choices : [])
+      .find((candidate) => candidate.id === id);
+    if (choice === undefined) return [];
+    return [{
+      id: choice.id,
+      label: choice.label,
+      impact: [deltaSummary(state, choice), choice.consequence.text].filter(Boolean).join(" · ")
+    }];
+  });
+
 function viewFor(state: RuntimeState, stage: TrialPlayerView["stage"], props: ScenarioTrialProps): TrialPlayerView {
   const node = nodeFor(state);
   const choice = lastChoice(state);
@@ -61,6 +74,7 @@ function viewFor(state: RuntimeState, stage: TrialPlayerView["stage"], props: Sc
     introduction: state.scenario.description,
     roleDescription: props.roleDescription,
     stage,
+    decisionTrace: decisionTraceFor(state),
     metrics: state.scenario.metrics.map((metric) => ({
       id: metric.id,
       label: metric.label,
@@ -85,8 +99,16 @@ function viewFor(state: RuntimeState, stage: TrialPlayerView["stage"], props: Sc
       scene: {
         title: node.title,
         situation: node.situation,
-        ...(choice ? { consequence: [choice.consequence.text, deltaSummary(state, choice)].filter(Boolean).join(" ") } : {}),
-        choices: node.choices.map((item) => ({ id: item.id, label: item.label, detail: item.rationale })),
+        ...(choice ? {
+          consequence: [
+            choice.consequence.text,
+            deltaSummary(state, choice),
+            `Decision basis: ${choice.rationale}`
+          ].filter(Boolean).join(" ")
+        } : {}),
+        // Rationale is deliberately withheld until after commitment. Showing it here
+        // turns a judgment exercise back into an answer-revealing multiple-choice quiz.
+        choices: node.choices.map((item) => ({ id: item.id, label: item.label })),
         evidence
       }
     };

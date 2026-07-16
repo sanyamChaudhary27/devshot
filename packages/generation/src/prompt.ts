@@ -12,6 +12,8 @@ const structuralRules = [
   "Every citation quote must be copied verbatim from the source, and its sourceSpan offsets must cover exactly that quote in the normalized source text.",
   "Give every factual situation, evidence item, choice rationale, consequence, objective, and terminal debrief one or more citation IDs from the dossier.",
   "Create two to four material choices at each scene. Each choice must have a distinct state transition or destination.",
+  "Make the strongest path a chain of at least two decisions. Earlier consequences must change later evidence, constraints, or metric trade-offs.",
+  "Do not make a choice trivially correct from its wording. The learner must weigh cited evidence, constraints, and the evolving operational state.",
   "Create a scene start node, at least two reachable terminal outcomes, no cycles, and only metric IDs declared in the scenario.",
   "For each metric, declare whether higher or lower values are better so the player never infers meaning from an ID.",
   "Do not generate HTML, JavaScript, URLs, tool calls, hidden reasoning, or claims absent from the dossier."

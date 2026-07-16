@@ -158,7 +158,18 @@ export const persistGeneratedTrial = async (
       document: result.scenario,
       document_sha256: sha256(JSON.stringify(result.scenario)),
       generation_model: process.env.OPENAI_MODEL?.trim() || "gpt-5.6-terra",
-      validation_report: { valid: true, attempts: result.attempts, grounded: true }
+      validation_report: {
+        valid: true,
+        attempts: result.attempts,
+        grounded: true,
+        publicEvidence: {
+          enabled: request.publicEvidence.enabled,
+          attributionUrl: request.publicEvidence.attributionUrl ?? null,
+          attributionTitle: request.publicEvidence.attributionTitle ?? null,
+          licenseNotice: request.publicEvidence.licenseNotice ?? null,
+          rightsConfirmed: request.publicEvidence.rightsConfirmed ?? false
+        }
+      }
     });
     if (versionError) throw new Error("Could not save the immutable trial version.");
 

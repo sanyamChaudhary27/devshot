@@ -93,8 +93,18 @@ export function CreateTrial() {
   }
 
   return <main className="create-shell">
-    <header className="create-topbar"><Link className="wordmark" href="/">skill<span>trials</span></Link><Link className="text-link" href="/sample">View the sample</Link></header>
-    <section className="create-intro"><p className="eyebrow">Author workspace</p><h1>Turn a source into a decision trial.</h1><p>SkillTrials uses the supplied material as its only factual authority. It checks exact quotes, citations, graph reachability, and terminal outcomes before it lets anyone play.</p></section>
+    <header className="create-topbar"><Link className="brand" href="/" aria-label="SkillTrials home"><span className="brand-mark" aria-hidden="true">S</span><span>skill<span>trials</span></span></Link><Link className="text-link" href="/sample">View the sample</Link></header>
+    <section className="create-intro"><p className="product-kicker"><span aria-hidden="true" />Author workspace</p><h1>Turn the source into the moment that tests it.</h1><p>SkillTrials treats the supplied material as the factual boundary. It checks quotes, citations, graph reachability, and terminal outcomes before the trial becomes playable.</p></section>
+    <div className="create-workspace">
+      <aside className="create-guide" aria-label="Generation contract">
+        <p className="eyebrow">Generation contract</p>
+        <ol>
+          <li><span>01</span><div><strong>Bound the facts</strong><p>Your source is the only authority for claims and consequences.</p></div></li>
+          <li><span>02</span><div><strong>Build the decision graph</strong><p>Every choice must lead to a valid, reachable next state.</p></div></li>
+          <li><span>03</span><div><strong>Verify before play</strong><p>Schema, grounding, citations, and terminal paths are checked before a draft is saved.</p></div></li>
+        </ol>
+        <div className="create-guide__notice"><span aria-hidden="true">✓</span><p>Your source stays private unless you explicitly enable public evidence and confirm sharing rights.</p></div>
+      </aside>
     <form className="create-form" onSubmit={generate}>
       <div className="field-row"><label>Source title<input value={title} minLength={2} maxLength={240} onChange={(event) => setTitle(event.target.value)} required /></label><label>Learner audience<input value={audience} minLength={2} maxLength={160} onChange={(event) => setAudience(event.target.value)} required /></label></div>
       <fieldset><legend>Difficulty</legend>{(["introductory", "intermediate", "advanced"] as const).map((option) => <label className="radio" key={option}><input checked={difficulty === option} name="difficulty" onChange={() => setDifficulty(option)} type="radio" value={option} />{option}</label>)}</fieldset>
@@ -105,5 +115,6 @@ export function CreateTrial() {
       <button className="ui-action" disabled={status === "generating"} type="submit">{status === "generating" ? "Generating and verifying…" : status === "failed" ? "Retry generation" : "Generate playable trial"}</button>
       <p className={status === "failed" ? "form-message form-message--error" : "form-message"} aria-live="polite">{message}</p>
     </form>
+    </div>
   </main>;
 }

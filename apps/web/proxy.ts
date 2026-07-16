@@ -26,7 +26,8 @@ export async function proxy(request: NextRequest) {
       }
     }
   );
-  await supabase.auth.getUser();
+  // Refresh the cookie-backed session without trusting user-controlled JWT claims.
+  await supabase.auth.getClaims();
   return supabaseResponse;
 }
 

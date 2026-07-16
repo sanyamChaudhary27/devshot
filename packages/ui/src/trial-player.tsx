@@ -52,6 +52,11 @@ export type TrialPlayerView = {
   scene?: PlayerScene;
   metrics: PlayerMetric[];
   evidence: PlayerEvidence[];
+  decisionTrace: readonly {
+    id: string;
+    label: string;
+    impact: string;
+  }[];
   stage: "briefing" | "playing" | "finished";
   debrief?: PlayerDebrief;
   restartLabel?: string;
@@ -71,8 +76,8 @@ function Evidence({ evidence }: { evidence: PlayerEvidence[] }) {
   if (evidence.length === 0) return null;
 
   return (
-    <details className="evidence">
-      <summary>Source evidence ({evidence.length})</summary>
+    <details className="evidence" open>
+      <summary>Evidence pack · {evidence.length} cited source {evidence.length === 1 ? "excerpt" : "excerpts"}</summary>
       <ul>
         {evidence.map((item, index) => (
           <li key={item.id}>
@@ -98,8 +103,9 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
     <main className="trial-shell">
       <div className="trial-frame">
         <header className="trial-topbar">
-          <a className="wordmark" href="/" aria-label="SkillTrials home">
-            skill<span>trials</span>
+          <a className="brand" href="/" aria-label="SkillTrials home">
+            <span className="brand-mark" aria-hidden="true">S</span>
+            <span>skill<span>trials</span></span>
           </a>
           <span className="trial-type">Grounded decision simulation</span>
         </header>
@@ -111,11 +117,11 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
         {isBriefing ? (
           <section className="trial-grid" aria-labelledby="briefing-title">
             <div className="trial-main">
-              <p className="eyebrow">Playable trial</p>
+              <p className="product-kicker"><span aria-hidden="true" />Playable trial</p>
               <h1 className="trial-heading" id="briefing-title">{view.title}</h1>
               <p className="trial-lede">{view.introduction}</p>
               <div className="briefing">
-                <p className="eyebrow">Your role</p>
+                <p className="eyebrow">Your brief</p>
                 <p>{view.roleDescription ?? "Read the available evidence, decide what to do, and watch the state change. There are no hidden model calls during the run."}</p>
               </div>
               <ActionButton onClick={onBegin} disabled={disabled}>Begin the trial</ActionButton>
@@ -129,7 +135,7 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
           <>
             <header className="player-header">
               <div className="player-kicker">
-                <StatusPill>{isFinished ? "Debrief" : "Live exercise"}</StatusPill>
+                <StatusPill>{isFinished ? "Cited debrief" : "Decision room"}</StatusPill>
                 <p className="eyebrow">{view.category}</p>
               </div>
               <h1 className="player-title">{isFinished ? view.debrief?.headline ?? "Run complete" : scene?.title ?? view.title}</h1>
@@ -140,7 +146,7 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
               <section className="situation" aria-labelledby="decision-heading">
                 {isFinished && view.debrief ? (
                   <>
-                    <p className="eyebrow">Evidence-backed debrief</p>
+                    <p className="product-kicker"><span aria-hidden="true" />Evidence-backed debrief</p>
                     <h2 id="decision-heading">{view.debrief.summary}</h2>
                     <div className="debrief-grid">
                       <div className="debrief-card">
@@ -162,9 +168,9 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
                   </>
                 ) : scene ? (
                   <>
-                    <p className="eyebrow">Decision point</p>
-                    <h2 id="decision-heading">Choose your next action</h2>
-                    <p className="situation__body">Each action changes the operational state. Use the source evidence before committing.</p>
+                    <p className="product-kicker"><span aria-hidden="true" />Decision point</p>
+                    <h2 id="decision-heading">Choose the move you can defend.</h2>
+                    <p className="situation__body">Each action changes the operational state. Read the evidence pack, then commit to the next move.</p>
                     {scene.consequence ? (
                       <div className="consequence" role="status">
                         <strong>What changed</strong>
@@ -195,6 +201,22 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
               <aside className="metric-rail" aria-label="Operational state">
                 <h2>Operational state</h2>
                 {view.metrics.map((metric) => <Metric key={metric.id} {...metric} />)}
+                <section className="decision-trace" aria-label="Decision trace">
+                  <p className="eyebrow">Decision trace</p>
+                  {view.decisionTrace.length === 0 ? (
+                    <p className="decision-trace__empty">No commitment yet. Your first move will leave a visible record.</p>
+                  ) : (
+                    <ol>
+                      {view.decisionTrace.map((entry, index) => (
+                        <li key={entry.id}>
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                          <strong>{entry.label}</strong>
+                          <p>{entry.impact}</p>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </section>
               </aside>
             </div>
           </>
