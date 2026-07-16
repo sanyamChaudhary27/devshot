@@ -6,9 +6,6 @@ import { createSupabaseServerClient } from "../../lib/supabase/server";
 
 export type LoginState = { message: string; success: boolean };
 
-const initialState: LoginState = { message: "", success: false };
-export { initialState };
-
 export async function requestMagicLink(_previous: LoginState, formData: FormData): Promise<LoginState> {
   const submittedEmail = formData.get("email");
   const email = typeof submittedEmail === "string" ? submittedEmail.trim().toLowerCase() : "";

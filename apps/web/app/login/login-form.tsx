@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { initialState, requestMagicLink } from "./actions";
+import { requestMagicLink, type LoginState } from "./actions";
+
+const initialState: LoginState = { message: "", success: false };
 
 export function LoginForm({ nextPath }: { nextPath: string }) {
   const [state, action, pending] = useActionState(requestMagicLink, initialState);
