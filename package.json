@@ -1,0 +1,17 @@
+{
+  "name": "skilltrials",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "dev": "pnpm --filter @skilltrials/web dev",
+    "build": "pnpm --filter @skilltrials/web build",
+    "lint": "pnpm --filter @skilltrials/domain lint && pnpm --filter @skilltrials/web lint",
+    "test": "pnpm --filter @skilltrials/domain test && pnpm --filter @skilltrials/generation test && pnpm --filter @skilltrials/web test",
+    "typecheck": "pnpm --filter @skilltrials/domain typecheck && pnpm --filter @skilltrials/generation typecheck && pnpm --filter @skilltrials/ui typecheck && pnpm --filter @skilltrials/web typecheck"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "4.0.15"
+  }
+}

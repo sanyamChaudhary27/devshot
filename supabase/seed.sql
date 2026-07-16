@@ -1,0 +1,5 @@
+-- Intentionally empty.
+--
+-- The clean-browser demo uses the typed, source-free incident fixture in
+-- packages/domain/src/fixtures.ts. Keeping that fixture in code makes the
+-- demo reliable without storing invalid placeholder JSON or source text.
