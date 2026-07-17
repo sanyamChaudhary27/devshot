@@ -34,7 +34,26 @@ export type PlayerDebrief = {
   scoreValue: string;
   strengths: string;
   nextStep: string;
+  counterfactuals: readonly {
+    id: string;
+    label: string;
+    outcome: string;
+    consequence: string;
+  }[];
 };
+
+export type PlayerSimulationMap = readonly {
+  id: string;
+  title: string;
+  kind: "decision" | "outcome";
+  status: "completed" | "current" | "unvisited";
+  choices: readonly {
+    id: string;
+    label: string;
+    targetTitle: string;
+    selected: boolean;
+  }[];
+}[];
 
 export type PlayerScene = {
   title: string;
@@ -57,6 +76,7 @@ export type TrialPlayerView = {
     label: string;
     impact: string;
   }[];
+  map: PlayerSimulationMap;
   stage: "briefing" | "playing" | "finished";
   debrief?: PlayerDebrief;
   restartLabel?: string;
@@ -94,6 +114,38 @@ function Evidence({ evidence }: { evidence: PlayerEvidence[] }) {
   );
 }
 
+function SimulationMap({ map }: { map: PlayerSimulationMap }) {
+  return (
+    <section className="simulation-map" aria-label="Compiled simulation map">
+      <div className="simulation-map__header">
+        <p className="eyebrow">Compiled simulation map</p>
+        <span>{map.length} verified states</span>
+      </div>
+      <ol>
+        {map.map((node, index) => (
+          <li className={`simulation-map__node simulation-map__node--${node.status}`} key={node.id}>
+            <div className="simulation-map__node-header">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{node.title}</strong>
+              <em>{node.kind === "decision" ? "Decision" : "Outcome"}</em>
+            </div>
+            {node.choices.length > 0 ? (
+              <ul className="simulation-map__choices">
+                {node.choices.map((choice) => (
+                  <li className={choice.selected ? "is-selected" : undefined} key={choice.id}>
+                    <span>{choice.label}</span>
+                    <small>{choice.selected ? "selected → " : "branch → "}{choice.targetTitle}</small>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = false, notification, footer }: TrialPlayerProps) {
   const scene = view.scene;
   const isBriefing = view.stage === "briefing";
@@ -124,6 +176,7 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
                 <p className="eyebrow">Your brief</p>
                 <p>{view.roleDescription ?? "Read the available evidence, decide what to do, and watch the state change. There are no hidden model calls during the run."}</p>
               </div>
+              <SimulationMap map={view.map} />
               <ActionButton onClick={onBegin} disabled={disabled}>Begin the trial</ActionButton>
             </div>
             <aside className="metric-rail" aria-label="Starting conditions">
@@ -162,6 +215,22 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
                         <p>{view.debrief.nextStep}</p>
                       </div>
                     </div>
+                    {view.debrief.counterfactuals.length > 0 ? (
+                      <section className="counterfactual" aria-labelledby="counterfactual-title">
+                        <p className="eyebrow">Counterfactual review</p>
+                        <h3 id="counterfactual-title">The branches you did not take</h3>
+                        <ul>
+                          {view.debrief.counterfactuals.map((branch) => (
+                            <li key={branch.id}>
+                              <strong>{branch.label}</strong>
+                              <span>{branch.outcome}</span>
+                              <p>{branch.consequence}</p>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    ) : null}
+                    <SimulationMap map={view.map} />
                     <div className="decision-list">
                       <ActionButton onClick={onRestart} intent="secondary">{view.restartLabel ?? "Restart trial"}</ActionButton>
                     </div>
@@ -171,6 +240,7 @@ export function TrialPlayer({ view, onBegin, onChoose, onRestart, disabled = fal
                     <p className="product-kicker"><span aria-hidden="true" />Decision point</p>
                     <h2 id="decision-heading">Choose the move you can defend.</h2>
                     <p className="situation__body">Each action changes the operational state. Read the evidence pack, then commit to the next move.</p>
+                    <SimulationMap map={view.map} />
                     {scene.consequence ? (
                       <div className="consequence" role="status">
                         <strong>What changed</strong>

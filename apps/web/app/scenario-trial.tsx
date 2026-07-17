@@ -65,6 +65,42 @@ const decisionTraceFor = (state: RuntimeState): TrialPlayerView["decisionTrace"]
     }];
   });
 
+const mapFor = (state: RuntimeState): TrialPlayerView["map"] =>
+  state.scenario.nodes.map((node) => {
+    const wasVisited = node.kind === "scene" && node.choices.some((choice) => state.selectedChoiceIds.includes(choice.id));
+    const status = node.id === state.currentNodeId ? "current" : wasVisited ? "completed" : "unvisited";
+    return {
+      id: node.id,
+      title: node.title,
+      kind: node.kind === "scene" ? "decision" as const : "outcome" as const,
+      status,
+      choices: node.kind === "scene" ? node.choices.map((choice) => {
+        const target = state.scenario.nodes.find((candidate) => candidate.id === choice.nextNodeId);
+        return {
+          id: choice.id,
+          label: choice.label,
+          targetTitle: target?.title ?? "Unknown outcome",
+          selected: state.selectedChoiceIds.includes(choice.id)
+        };
+      }) : []
+    };
+  });
+
+const counterfactualsFor = (state: RuntimeState): NonNullable<TrialPlayerView["debrief"]>["counterfactuals"] =>
+  state.selectedChoiceIds.flatMap((selectedId) => {
+    const scene = state.scenario.nodes.find((node) => node.kind === "scene" && node.choices.some((choice) => choice.id === selectedId));
+    if (scene === undefined || scene.kind !== "scene") return [];
+    return scene.choices.filter((choice) => choice.id !== selectedId).map((choice) => {
+      const target = state.scenario.nodes.find((node) => node.id === choice.nextNodeId);
+      return {
+        id: choice.id,
+        label: choice.label,
+        outcome: target?.title ?? "Alternate outcome",
+        consequence: choice.consequence.text
+      };
+    });
+  });
+
 function viewFor(state: RuntimeState, stage: TrialPlayerView["stage"], props: ScenarioTrialProps): TrialPlayerView {
   const node = nodeFor(state);
   const choice = lastChoice(state);
@@ -75,6 +111,7 @@ function viewFor(state: RuntimeState, stage: TrialPlayerView["stage"], props: Sc
     roleDescription: props.roleDescription,
     stage,
     decisionTrace: decisionTraceFor(state),
+    map: mapFor(state),
     metrics: state.scenario.metrics.map((metric) => ({
       id: metric.id,
       label: metric.label,
@@ -127,7 +164,8 @@ function viewFor(state: RuntimeState, stage: TrialPlayerView["stage"], props: Sc
       scoreLabel: "Deterministic run score",
       scoreValue: `${result.score}/100 · ${result.outcome ?? "incomplete"}`,
       strengths: selections.length > 0 ? `Actions selected: ${selections.join(" → ")}.` : "No actions were recorded.",
-      nextStep: state.scenario.learningObjectives.map((objective) => objective.statement).join(" ")
+      nextStep: state.scenario.learningObjectives.map((objective) => objective.statement).join(" "),
+      counterfactuals: counterfactualsFor(state)
     }
   };
 }

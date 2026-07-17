@@ -172,8 +172,8 @@ export const laboratorySafetySource = {
 export const laboratorySafetyFixture: Scenario = {
   id: "laboratory-safety-fume-hood",
   version: 1,
-  title: "The fume hood check",
-  description: "A lab partner is ready to transfer a flammable solvent, but the hood's airflow indicator is out of range. Practice the decision sequence that protects the work before the experiment begins.",
+  title: "Lab incident command: airflow alarm",
+  description: "A preflight safety check has failed minutes before a solvent transfer. Set the conditions under which the experiment may proceed—or stop it before the consequence arrives.",
   startNodeId: "airflow-warning",
   citations: [
     { id: "hood-primary-control", label: "Why the hood matters", quote: "The fume hood is often the primary control device for protecting laboratory workers when working with flammable and/or toxic chemicals.", sourceSpan: { sourceId: "osha-3407", startOffset: 0, endOffset: 135 } },
@@ -194,7 +194,7 @@ export const laboratorySafetyFixture: Scenario = {
     {
       id: "airflow-warning",
       kind: "scene",
-      title: "The airflow indicator is out of range",
+      title: "Airflow alarm",
       situation: "Before a planned solvent transfer, you see the fume hood's airflow indicator reading outside its marked operating range. Your partner wants to start before the lab period ends.",
       citationIds: ["hood-primary-control", "hood-airflow"],
       evidence: [
