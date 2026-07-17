@@ -42,6 +42,15 @@ describe("Runbook Firewall policy compiler", () => {
       service: "payments-api",
       environment: "production" as const,
       changeSummary: "Remove a legacy invoice-status column.",
+      baseRevision: "8f3c2a1",
+      proposedRevision: "d75a401",
+      changedFiles: [{
+        path: "prisma/migrations/20260717_remove_status/migration.sql",
+        status: "modified" as const,
+        additions: 1,
+        deletions: 0,
+        summary: "Drops the legacy invoice-status column."
+      }],
       proposedCommand: "pnpm prisma migrate deploy --environment production"
     };
     const input = buildRunbookPolicyInput(dossier, {
@@ -54,6 +63,21 @@ describe("Runbook Firewall policy compiler", () => {
     expect(runbookChangeContextSchema.safeParse(context).success).toBe(true);
     expect(buildRunbookPolicyInstructions()).toContain("sole authority");
     expect(input).toContain("Remove a legacy invoice-status column.");
+  });
+
+  it("rejects unbounded or ambiguous revision context before it reaches the compiler", () => {
+    const base = {
+      service: "payments-api",
+      environment: "production" as const,
+      changeSummary: "Remove a legacy invoice-status column.",
+      baseRevision: "8f3c2a1",
+      proposedRevision: "d75a401",
+      changedFiles: [{ path: "db/migration.sql", status: "modified" as const, additions: 1, deletions: 0, summary: "Removes a legacy column." }]
+    };
+    expect(runbookChangeContextSchema.safeParse(base).success).toBe(true);
+    expect(runbookChangeContextSchema.safeParse({ ...base, proposedRevision: base.baseRevision }).success).toBe(false);
+    expect(runbookChangeContextSchema.safeParse({ ...base, changedFiles: [{ ...base.changedFiles[0], path: "../secrets.env" }] }).success).toBe(false);
+    expect(runbookChangeContextSchema.safeParse({ ...base, changedFiles: Array.from({ length: 101 }, (_, index) => ({ ...base.changedFiles[0], path: `db/migration-${index}.sql` })) }).success).toBe(false);
   });
 
   it("repairs one structurally ungrounded policy draft without a network call", async () => {

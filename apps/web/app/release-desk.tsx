@@ -15,11 +15,25 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 const citationFor = (citationId: string) => migrationRunbookFixture.citations.find((citation) => citation.id === citationId);
+const fixtureDiff = `diff --git a/packages/db/prisma/migrations/20260717_remove_legacy_status/migration.sql b/packages/db/prisma/migrations/20260717_remove_legacy_status/migration.sql
+new file mode 100644
+--- /dev/null
++++ b/packages/db/prisma/migrations/20260717_remove_legacy_status/migration.sql
+@@ -0,0 +1 @@
++ALTER TABLE invoices DROP COLUMN legacy_status;
+diff --git a/apps/payments/src/invoices/status.ts b/apps/payments/src/invoices/status.ts
+@@ -41,8 +41,3 @@ export function formatInvoiceStatus() {
+-  return legacyStatus;
++  return currentStatus;
+ }`;
 
 export function ReleaseDesk() {
   const [evidence, setEvidence] = useState<readonly EvidenceRecord[]>(blockedEvidenceFixture);
   const [release, setRelease] = useState(destructiveMigrationFixture);
   const [proofValues, setProofValues] = useState<Record<string, string>>(() => Object.fromEntries(eligibleEvidenceFixture.map((record) => [record.id, record.value])));
+  const [diffText, setDiffText] = useState(fixtureDiff);
+  const [diffMessage, setDiffMessage] = useState("The bundled diff has been parsed into the merge manifest.");
+  const [isParsingDiff, setIsParsingDiff] = useState(false);
   const [receipt, setReceipt] = useState<ReleaseReceipt | null>(null);
   const [isCreatingReceipt, setIsCreatingReceipt] = useState(false);
   const result = useMemo(
@@ -49,6 +63,22 @@ export function ReleaseDesk() {
       setReceipt(await createReleaseReceipt(migrationRunbookFixture, release, result, new Date().toISOString()));
     } finally {
       setIsCreatingReceipt(false);
+    }
+  };
+
+  const parseDiff = async () => {
+    setIsParsingDiff(true);
+    try {
+      const response = await fetch("/api/merge/parse", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ diff: diffText }) });
+      const payload = await response.json().catch(() => ({})) as { changedFiles?: typeof release.changedFiles; error?: string };
+      if (!response.ok || payload.changedFiles === undefined) throw new Error(payload.error ?? "The diff could not be parsed.");
+      setRelease((current) => ({ ...current, changedFiles: payload.changedFiles ?? current.changedFiles }));
+      setReceipt(null);
+      setDiffMessage(`${payload.changedFiles.length} changed file${payload.changedFiles.length === 1 ? "" : "s"} parsed into the release review.`);
+    } catch (caught) {
+      setDiffMessage(caught instanceof Error ? caught.message : "The diff could not be parsed.");
+    } finally {
+      setIsParsingDiff(false);
     }
   };
 
@@ -85,6 +115,8 @@ export function ReleaseDesk() {
             <div className="revision-compare"><div><span>Stable</span><input aria-label="Stable revision" onChange={(event) => setRelease({ ...release, baseRevision: event.target.value })} value={release.baseRevision} /></div><span aria-hidden="true">→</span><div><span>Upcoming merge</span><input aria-label="Upcoming merge revision" onChange={(event) => setRelease({ ...release, proposedRevision: event.target.value })} value={release.proposedRevision} /></div></div>
             <label className="edit-field">Deployment command<textarea onChange={(event) => setRelease({ ...release, command: event.target.value })} value={release.command} /></label>
             <label className="edit-field">Migration SQL<textarea aria-label="Migration SQL" onChange={(event) => setRelease({ ...release, migrationSql: event.target.value })} value={release.migrationSql ?? ""} /></label>
+            <label className="edit-field">Upcoming merge (unified diff)<textarea aria-label="Upcoming merge unified diff" onChange={(event) => setDiffText(event.target.value)} value={diffText} rows={12} /></label>
+            <div className="diff-actions"><button className="ui-action ui-action--secondary" disabled={isParsingDiff} onClick={parseDiff} type="button">{isParsingDiff ? "Parsing merge…" : "Parse merge into gate"}</button><p aria-live="polite">{diffMessage}</p></div>
             <ul className="changed-files" aria-label="Changed files in proposed merge">{release.changedFiles.map((file) => <li key={file.path}><code>{file.path}</code><span>+{file.additions} / −{file.deletions}</span></li>)}</ul>
           </section>
 

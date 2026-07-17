@@ -57,3 +57,13 @@ export {
   invalidRollbackEvidenceFixture,
   migrationRunbookFixture
 } from "./runbook-firewall-fixture";
+export {
+  type ChangedDiffFile,
+  type UnifiedDiffSummary,
+  isMigrationPath,
+  MAX_UNIFIED_DIFF_CHARACTERS,
+  MAX_UNIFIED_DIFF_FILES,
+  MAX_UNIFIED_DIFF_LINES,
+  parseUnifiedDiff,
+  unifiedDiffInputSchema
+} from "./unified-diff";

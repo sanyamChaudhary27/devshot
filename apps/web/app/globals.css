@@ -221,6 +221,9 @@ a { color: inherit; }
 .command-card > p { color: var(--muted); font-size: .9rem; line-height: 1.55; margin: 14px 0; }
 .edit-field { color: var(--subtle); display: grid; font-family: "Courier New", monospace; font-size: .65rem; gap: 7px; letter-spacing: .06em; margin-top: 14px; text-transform: uppercase; }
 .edit-field textarea { background: #0b1323; border: 1px solid #2c3b58; border-radius: 7px; color: #dce9fb; font-family: "Courier New", monospace; font-size: .78rem; min-height: 52px; padding: 10px; resize: vertical; }
+.diff-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 11px; margin-top: 12px; }
+.diff-actions .ui-action { min-height: 36px; padding: 7px 10px; }
+.diff-actions p { color: var(--subtle); font-size: .72rem; line-height: 1.4; margin: 0; }
 .command-card pre { background: #080f1c; border-radius: 7px; color: #bcd6e8; font-size: .79rem; margin: 0; overflow-x: auto; padding: 13px; }
 .changed-files { display: grid; gap: 7px; list-style: none; margin: 13px 0 0; padding: 0; }
 .changed-files li { align-items: center; background: #10192a; border-radius: 6px; display: flex; gap: 12px; justify-content: space-between; padding: 8px 10px; }

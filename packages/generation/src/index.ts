@@ -20,7 +20,9 @@ export {
   buildRunbookPolicyInput,
   buildRunbookPolicyInstructions,
   buildRunbookPolicyRepairInput,
+  changedFileSchema,
   runbookChangeContextSchema,
+  type ChangedFile,
   type RunbookChangeContext,
   type RunbookPolicyBrief
 } from "./runbook-policy-prompt";

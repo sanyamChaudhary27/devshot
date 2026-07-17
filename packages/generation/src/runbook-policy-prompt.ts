@@ -1,12 +1,46 @@
 import type { SourceDossier } from "./source";
 import { z } from "zod";
 
+const revisionSchema = z.string().trim().min(1).max(128).regex(/^[A-Za-z0-9][A-Za-z0-9._/-]*$/, "Revision contains unsupported characters");
+const changedFilePathSchema = z.string().trim().min(1).max(320).superRefine((path, context) => {
+  if (path.startsWith("/") || path.startsWith("\\") || path.includes("\0")) {
+    context.addIssue({ code: "custom", message: "Changed file path must be relative" });
+  }
+  if (/(^|[\\/])\.\.([\\/]|$)/.test(path)) {
+    context.addIssue({ code: "custom", message: "Changed file path cannot traverse outside the repository" });
+  }
+});
+
+export const changedFileSchema = z.object({
+  path: changedFilePathSchema,
+  status: z.enum(["added", "modified", "deleted", "renamed"]),
+  additions: z.number().int().nonnegative().max(1_000_000),
+  deletions: z.number().int().nonnegative().max(1_000_000),
+  summary: z.string().trim().min(1).max(600)
+}).strict();
+
+export type ChangedFile = z.infer<typeof changedFileSchema>;
+
 export const runbookChangeContextSchema = z.object({
   service: z.string().trim().min(1).max(160),
   environment: z.enum(["development", "staging", "production"]),
   changeSummary: z.string().trim().min(1).max(2_000),
+  baseRevision: revisionSchema,
+  proposedRevision: revisionSchema,
+  changedFiles: z.array(changedFileSchema).min(1).max(100),
   proposedCommand: z.string().trim().min(1).max(4_000).optional()
-}).strict();
+}).strict().superRefine((context, issueContext) => {
+  if (context.baseRevision === context.proposedRevision) {
+    issueContext.addIssue({ code: "custom", path: ["proposedRevision"], message: "Proposed revision must differ from the base revision" });
+  }
+  const paths = new Set<string>();
+  context.changedFiles.forEach((file, index) => {
+    if (paths.has(file.path)) {
+      issueContext.addIssue({ code: "custom", path: ["changedFiles", index, "path"], message: "Changed file paths must be unique" });
+    }
+    paths.add(file.path);
+  });
+});
 
 export type RunbookChangeContext = z.infer<typeof runbookChangeContextSchema>;
 
