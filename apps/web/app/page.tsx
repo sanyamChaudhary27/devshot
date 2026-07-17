@@ -17,7 +17,7 @@ export default function Home() {
         <nav aria-label="Primary navigation" className="marketing-nav__links">
           <a href="#how-it-works">How it works</a>
           <Link href="/sample">Release gate demo</Link>
-          <Link className="nav-cta" href="/login?next=/create">Compile a runbook</Link>
+          <Link className="nav-cta" href="/sample">Try the gate</Link>
         </nav>
       </header>
 
@@ -28,7 +28,6 @@ export default function Home() {
           <p className="marketing-hero__lede">Runbook Firewall turns the release rules trapped in a team&apos;s runbook into a cited gate. A risky command stays blocked until the operator can show the required proof.</p>
           <div className="marketing-actions">
             <Link className="ui-action ui-action--primary" href="/sample">Open the dangerous migration <span aria-hidden="true">→</span></Link>
-            <Link className="ui-action ui-action--ghost" href="/login?next=/create">Compile a runbook</Link>
           </div>
           <ul className="marketing-trust" aria-label="Product guarantees">
             <li><span aria-hidden="true">✓</span> Cited release controls</li>
