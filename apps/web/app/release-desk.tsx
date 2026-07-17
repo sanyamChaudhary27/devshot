@@ -18,29 +18,35 @@ const citationFor = (citationId: string) => migrationRunbookFixture.citations.fi
 
 export function ReleaseDesk() {
   const [evidence, setEvidence] = useState<readonly EvidenceRecord[]>(blockedEvidenceFixture);
+  const [release, setRelease] = useState(destructiveMigrationFixture);
+  const [proofValues, setProofValues] = useState<Record<string, string>>(() => Object.fromEntries(eligibleEvidenceFixture.map((record) => [record.id, record.value])));
   const [receipt, setReceipt] = useState<ReleaseReceipt | null>(null);
   const [isCreatingReceipt, setIsCreatingReceipt] = useState(false);
   const result = useMemo(
-    () => evaluateReleaseGate(migrationRunbookFixture, destructiveMigrationFixture, evidence),
-    [evidence]
+    () => evaluateReleaseGate(migrationRunbookFixture, release, evidence),
+    [evidence, release]
   );
   const blockingFailures = result.controls.filter((control) => control.control.severity === "blocking" && control.status !== "satisfied").length;
   const proofRecords = eligibleEvidenceFixture.filter((record) => record.controlId !== "service-impact");
   const attachedProofs = evidence.filter((record) => record.controlId !== "service-impact" && record.status === "valid").length;
   const attachProof = (record: EvidenceRecord) => {
-    setEvidence((current) => current.some((candidate) => candidate.id === record.id) ? current : [...current, record]);
+    const value = proofValues[record.id]?.trim();
+    if (!value) return;
+    setEvidence((current) => current.some((candidate) => candidate.id === record.id) ? current : [...current, { ...record, value }]);
     setReceipt(null);
   };
 
   const resetDemo = () => {
     setEvidence(blockedEvidenceFixture);
+    setRelease(destructiveMigrationFixture);
+    setProofValues(Object.fromEntries(eligibleEvidenceFixture.map((record) => [record.id, record.value])));
     setReceipt(null);
   };
 
   const createReceipt = async () => {
     setIsCreatingReceipt(true);
     try {
-      setReceipt(await createReleaseReceipt(migrationRunbookFixture, destructiveMigrationFixture, result, new Date().toISOString()));
+      setReceipt(await createReleaseReceipt(migrationRunbookFixture, release, result, new Date().toISOString()));
     } finally {
       setIsCreatingReceipt(false);
     }
@@ -73,14 +79,13 @@ export function ReleaseDesk() {
         <div className="release-main">
           <section className="command-card" aria-labelledby="command-title">
             <div className="section-heading">
-              <div><p className="eyebrow">Merge under review</p><h2 id="command-title">{destructiveMigrationFixture.service}</h2></div>
-              <span>{destructiveMigrationFixture.environment}</span>
+              <div><p className="eyebrow">Merge under review</p><h2 id="command-title">{release.service}</h2></div>
+              <span>{release.environment}</span>
             </div>
-            <div className="revision-compare"><div><span>Stable</span><strong>{destructiveMigrationFixture.baseRevision}</strong></div><span aria-hidden="true">→</span><div><span>Upcoming merge</span><strong>{destructiveMigrationFixture.proposedRevision}</strong></div></div>
-            <code>{destructiveMigrationFixture.command}</code>
-            <p>{destructiveMigrationFixture.migrationSummary}</p>
-            <pre aria-label="Migration SQL"><code>{destructiveMigrationFixture.migrationSql}</code></pre>
-            <ul className="changed-files" aria-label="Changed files in proposed merge">{destructiveMigrationFixture.changedFiles.map((file) => <li key={file.path}><code>{file.path}</code><span>+{file.additions} / −{file.deletions}</span></li>)}</ul>
+            <div className="revision-compare"><div><span>Stable</span><input aria-label="Stable revision" onChange={(event) => setRelease({ ...release, baseRevision: event.target.value })} value={release.baseRevision} /></div><span aria-hidden="true">→</span><div><span>Upcoming merge</span><input aria-label="Upcoming merge revision" onChange={(event) => setRelease({ ...release, proposedRevision: event.target.value })} value={release.proposedRevision} /></div></div>
+            <label className="edit-field">Deployment command<textarea onChange={(event) => setRelease({ ...release, command: event.target.value })} value={release.command} /></label>
+            <label className="edit-field">Migration SQL<textarea aria-label="Migration SQL" onChange={(event) => setRelease({ ...release, migrationSql: event.target.value })} value={release.migrationSql ?? ""} /></label>
+            <ul className="changed-files" aria-label="Changed files in proposed merge">{release.changedFiles.map((file) => <li key={file.path}><code>{file.path}</code><span>+{file.additions} / −{file.deletions}</span></li>)}</ul>
           </section>
 
           <section className="risk-strip" aria-label="Deterministic risk signals">
@@ -127,7 +132,7 @@ export function ReleaseDesk() {
                 const control = migrationRunbookFixture.controls.find((candidate) => candidate.id === record.controlId);
                 const attached = evidence.some((candidate) => candidate.id === record.id);
                 return <li className={attached ? "is-attached" : undefined} key={record.id}>
-                  <div><strong>{control?.label ?? "Required evidence"}</strong><span>{record.value}</span></div>
+                  <div><strong>{control?.label ?? "Required evidence"}</strong><input aria-label={`${control?.label ?? "Evidence"} value`} onChange={(event) => setProofValues({ ...proofValues, [record.id]: event.target.value })} value={proofValues[record.id] ?? ""} /></div>
                   <button disabled={attached} onClick={() => attachProof(record)} type="button">{attached ? "Attached" : "Attach"}</button>
                 </li>;
               })}
