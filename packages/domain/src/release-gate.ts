@@ -36,11 +36,18 @@ export const releasePolicySchema = z.object({
 
 export const proposedReleaseSchema = z.object({
   id,
+  baseRevision: z.string().trim().min(7).max(96),
+  proposedRevision: z.string().trim().min(7).max(96),
   command: detail,
   environment: z.enum(["development", "staging", "production"]),
   service: label,
   migrationSummary: z.string().trim().max(1_000).optional(),
-  migrationSql: z.string().trim().max(12_000).optional()
+  migrationSql: z.string().trim().max(12_000).optional(),
+  changedFiles: z.array(z.object({
+    path: z.string().trim().min(1).max(320),
+    additions: z.number().int().nonnegative(),
+    deletions: z.number().int().nonnegative()
+  }).strict()).min(1).max(100)
 }).strict();
 
 export const evidenceRecordSchema = z.object({
@@ -108,6 +115,9 @@ export const analyzeReleaseRisk = (release: ProposedRelease): readonly RiskSigna
   const signals: RiskSignal[] = [];
   if (release.environment === "production") {
     signals.push({ id: "production-target", label: "Production target", level: "high", detail: "The proposed command targets production." });
+  }
+  if (release.changedFiles.some((file) => /(?:^|\/)(?:prisma|migrations?)\//i.test(file.path))) {
+    signals.push({ id: "migration-diff", label: "Migration file changed", level: "high", detail: "The upcoming merge changes a migration path and requires the runbook's recovery safeguards." });
   }
   if (hasToken(inspected, /\bdrop\s+(table|column|database|schema)\b/)) {
     signals.push({ id: "destructive-schema", label: "Destructive schema change", level: "high", detail: "The change contains a DROP operation that may be irreversible without a tested rollback." });

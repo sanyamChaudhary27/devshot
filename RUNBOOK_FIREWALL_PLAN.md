@@ -2,7 +2,7 @@
 
 ## Product decision
 
-Runbook Firewall is a **pre-execution release gate**, not a shell runner and not a runbook chatbot. Before an operator performs a risky production change, it compiles the team's prose runbook into cited, typed safeguards; evaluates the proposed change and submitted evidence; then returns an auditable `BLOCKED` or `ELIGIBLE` verdict.
+Runbook Firewall is a **merge-aware pre-execution release gate**, not a shell runner and not a runbook chatbot. Before an operator performs a risky production change, it compares the stable revision with the upcoming merge, compiles the team's prose runbook into cited, typed safeguards, evaluates the actual change and submitted evidence, then returns an auditable `BLOCKED` or `ELIGIBLE` verdict.
 
 The MVP does not connect to or execute against a production system. It must never claim that a submitted statement is independently verified unless the product has an explicit, testable integration for it. In the first demo, evidence is labelled as operator-attested or demo-verified.
 
@@ -14,7 +14,7 @@ The MVP does not connect to or execute against a production system. It must neve
 
 ## Three-minute demo
 
-1. Open a supplied Postgres migration runbook and a proposed destructive migration.
+1. Open a supplied Postgres migration runbook and compare `main` with an upcoming destructive migration merge.
 2. Show the generated release gate: maintenance window, change approval, backup, rollback, and affected service; each control cites a runbook excerpt.
 3. The unsafe migration is `BLOCKED`: it lacks a backup receipt, approval, and a usable rollback plan. The operator sees the exact missing control and cited reason.
 4. Add demo evidence and a validated rollback plan. The deterministic gate becomes `ELIGIBLE`.
@@ -28,7 +28,7 @@ flowchart LR
   N --> G["GPT-5.6: extract typed controls with source spans"]
   G --> V["Deterministic schema, citation, and policy validator"]
   V --> P["Versioned release policy"]
-  C["Proposed command + migration manifest"] --> A["Deterministic risk analyzer"]
+  C["Stable revision + upcoming merge + command"] --> A["Deterministic diff and risk analyzer"]
   E["Operator-attested evidence"] --> X["Release gate evaluator"]
   P --> X
   A --> X
@@ -41,7 +41,7 @@ flowchart LR
 ### Inputs
 
 - One plaintext or Markdown runbook, capped to a safe size.
-- A proposed command, environment, affected service, and optional migration manifest.
+- A stable revision, upcoming merge revision, changed-file manifest, proposed command, environment, affected service, and optional migration manifest.
 - Evidence records for named controls. The initial demo supports operator-attested values only.
 
 ### Compiled controls

@@ -2,11 +2,11 @@
 
 ## Mission
 
-Build Runbook Firewall: an evidence-backed pre-execution release gate for risky production changes. The submission must feel like a finished Developer Tool, not a runbook chatbot, checklist, or command runner.
+Build Runbook Firewall: a merge-aware, evidence-backed pre-execution release gate for risky production changes. The submission must feel like a finished Developer Tool, not a runbook chatbot, checklist, or command runner.
 
 ## Product contract
 
-- A judge understands the operator, risky moment, input, and blocked-versus-eligible value within 20 seconds.
+- A judge understands the operator, stable-versus-upcoming merge, risky moment, and blocked-versus-eligible value within 20 seconds.
 - GPT-5.6 compiles unstructured runbooks into cited, typed safeguards.
 - Deterministic code evaluates evidence and owns the final release verdict.
 - Every control, failure, and receipt claim links to a source span or explicitly labelled evidence record.
@@ -38,7 +38,7 @@ Dependencies point inward: UI -> application -> domain. Supabase and OpenAI are 
 1. Normalize and bound the runbook source.
 2. Extract typed controls with source spans.
 3. Validate schema, citations, control types, and policy completeness.
-4. Analyze the proposed command and migration manifest using deterministic risk rules.
+4. Analyze the stable-versus-upcoming merge, proposed command, and migration manifest using deterministic risk rules.
 5. Match typed evidence to each control.
 6. Return `BLOCKED` or `ELIGIBLE`; warnings never override a failed blocking control.
 7. Persist an immutable, fingerprinted receipt.

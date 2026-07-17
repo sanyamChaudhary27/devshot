@@ -54,5 +54,6 @@ export {
   blockedEvidenceFixture,
   destructiveMigrationFixture,
   eligibleEvidenceFixture,
+  invalidRollbackEvidenceFixture,
   migrationRunbookFixture
 } from "./runbook-firewall-fixture";

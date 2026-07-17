@@ -6,6 +6,7 @@ import {
   destructiveMigrationFixture,
   eligibleEvidenceFixture,
   evaluateReleaseGate,
+  invalidRollbackEvidenceFixture,
   migrationRunbookFixture,
   type EvidenceRecord,
   type ReleaseReceipt
@@ -24,10 +25,10 @@ export function ReleaseDesk() {
     [evidence]
   );
   const blockingFailures = result.controls.filter((control) => control.control.severity === "blocking" && control.status !== "satisfied").length;
-  const hasDemoProof = evidence.length === eligibleEvidenceFixture.length;
-
-  const applyDemoProof = () => {
-    setEvidence(eligibleEvidenceFixture);
+  const proofRecords = eligibleEvidenceFixture.filter((record) => record.controlId !== "service-impact");
+  const attachedProofs = evidence.filter((record) => record.controlId !== "service-impact" && record.status === "valid").length;
+  const attachProof = (record: EvidenceRecord) => {
+    setEvidence((current) => current.some((candidate) => candidate.id === record.id) ? current : [...current, record]);
     setReceipt(null);
   };
 
@@ -72,12 +73,14 @@ export function ReleaseDesk() {
         <div className="release-main">
           <section className="command-card" aria-labelledby="command-title">
             <div className="section-heading">
-              <div><p className="eyebrow">Proposed production change</p><h2 id="command-title">{destructiveMigrationFixture.service}</h2></div>
-              <span>production</span>
+              <div><p className="eyebrow">Merge under review</p><h2 id="command-title">{destructiveMigrationFixture.service}</h2></div>
+              <span>{destructiveMigrationFixture.environment}</span>
             </div>
+            <div className="revision-compare"><div><span>Stable</span><strong>{destructiveMigrationFixture.baseRevision}</strong></div><span aria-hidden="true">→</span><div><span>Upcoming merge</span><strong>{destructiveMigrationFixture.proposedRevision}</strong></div></div>
             <code>{destructiveMigrationFixture.command}</code>
             <p>{destructiveMigrationFixture.migrationSummary}</p>
             <pre aria-label="Migration SQL"><code>{destructiveMigrationFixture.migrationSql}</code></pre>
+            <ul className="changed-files" aria-label="Changed files in proposed merge">{destructiveMigrationFixture.changedFiles.map((file) => <li key={file.path}><code>{file.path}</code><span>+{file.additions} / −{file.deletions}</span></li>)}</ul>
           </section>
 
           <section className="risk-strip" aria-label="Deterministic risk signals">
@@ -116,15 +119,24 @@ export function ReleaseDesk() {
             <h2>{migrationRunbookFixture.title}</h2>
             <p>Five typed safeguards were compiled from a versioned runbook. The bundled demo needs no model call.</p>
           </section>
-          {!hasDemoProof ? (
-            <button className="ui-action ui-action--primary" onClick={applyDemoProof} type="button">Apply demo proof</button>
-          ) : (
-            <>
-              <button className="ui-action ui-action--primary" disabled={isCreatingReceipt} onClick={createReceipt} type="button">{isCreatingReceipt ? "Creating receipt…" : "Create release receipt"}</button>
-              <button className="text-action" onClick={resetDemo} type="button">Reset unsafe release</button>
-            </>
-          )}
-          <p className="provenance-note">Demo proof is labelled <strong>demo fixture</strong>. It is not a live infrastructure integration and the app never executes this command.</p>
+          <section className="proof-inbox" aria-labelledby="proof-title">
+            <div className="section-heading"><div><p className="eyebrow">Proof inbox</p><h2 id="proof-title">{attachedProofs}/{proofRecords.length} records attached</h2></div></div>
+            <p>Attach each record to the release before asking the gate to open.</p>
+            <ul>
+              {proofRecords.map((record) => {
+                const control = migrationRunbookFixture.controls.find((candidate) => candidate.id === record.controlId);
+                const attached = evidence.some((candidate) => candidate.id === record.id);
+                return <li className={attached ? "is-attached" : undefined} key={record.id}>
+                  <div><strong>{control?.label ?? "Required evidence"}</strong><span>{record.value}</span></div>
+                  <button disabled={attached} onClick={() => attachProof(record)} type="button">{attached ? "Attached" : "Attach"}</button>
+                </li>;
+              })}
+            </ul>
+            {!evidence.some((record) => record.id === invalidRollbackEvidenceFixture.id) ? <button className="proof-inbox__rejection" onClick={() => attachProof(invalidRollbackEvidenceFixture)} type="button">Test an unproven rollback</button> : null}
+          </section>
+          {result.status === "ELIGIBLE" ? <button className="ui-action ui-action--primary" disabled={isCreatingReceipt} onClick={createReceipt} type="button">{isCreatingReceipt ? "Creating receipt…" : "Create release receipt"}</button> : null}
+          <button className="text-action" onClick={resetDemo} type="button">Reset unsafe release</button>
+          <p className="provenance-note">These records are labelled <strong>demo fixture</strong>. Production integrations would need explicit verification adapters; this app never executes the command.</p>
           {receipt ? <section className="receipt" aria-labelledby="receipt-title"><p className="eyebrow">Immutable receipt</p><h2 id="receipt-title">Eligible at {new Date(receipt.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</h2><dl><div><dt>Command fingerprint</dt><dd>{receipt.fingerprint}</dd></div><div><dt>Policy</dt><dd>{receipt.policyId} v{receipt.policyVersion}</dd></div><div><dt>Evidence</dt><dd>{receipt.controls.filter((control) => control.status === "satisfied").length} matched records</dd></div></dl></section> : null}
         </aside>
       </section>

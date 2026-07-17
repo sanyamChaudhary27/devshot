@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SkillTrials | Grounded decision practice",
-  description: "Turn source material into grounded, playable decision simulations.",
+  title: "Runbook Firewall | Merge-aware release gates",
+  description: "Compare an upcoming merge with the runbook safeguards required to release it safely.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

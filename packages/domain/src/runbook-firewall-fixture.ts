@@ -22,11 +22,18 @@ export const migrationRunbookFixture: ReleasePolicy = {
 
 export const destructiveMigrationFixture: ProposedRelease = {
   id: "release-invoice-legacy-status",
+  baseRevision: "main@7f31c92",
+  proposedRevision: "merge/remove-legacy-status@b4d82ef",
   command: "pnpm prisma migrate deploy --environment production",
   environment: "production",
   service: "payments-api",
   migrationSummary: "Remove the legacy invoice status after a backfill.",
-  migrationSql: "ALTER TABLE invoices DROP COLUMN legacy_status;"
+  migrationSql: "ALTER TABLE invoices DROP COLUMN legacy_status;",
+  changedFiles: [
+    { path: "apps/payments/src/invoices/status.ts", additions: 8, deletions: 31 },
+    { path: "packages/db/prisma/migrations/20260717_remove_legacy_status/migration.sql", additions: 1, deletions: 0 },
+    { path: "apps/payments/src/invoices/status.test.ts", additions: 19, deletions: 5 }
+  ]
 };
 
 const capturedAt = "2026-07-17T09:00:00.000Z";
@@ -34,6 +41,15 @@ const capturedAt = "2026-07-17T09:00:00.000Z";
 export const blockedEvidenceFixture: readonly EvidenceRecord[] = [
   { id: "impact-ops-731", controlId: "service-impact", value: "OPS-731 acknowledges payments-api impact and the customer support notice.", provenance: "demo_fixture", capturedAt, status: "valid" }
 ];
+
+export const invalidRollbackEvidenceFixture: EvidenceRecord = {
+  id: "rollback-unproven-20260717",
+  controlId: "rollback-plan",
+  value: "Rollback: restore the column if there is a problem.",
+  provenance: "demo_fixture",
+  capturedAt,
+  status: "invalid"
+};
 
 export const eligibleEvidenceFixture: readonly EvidenceRecord[] = [
   { id: "window-ops-731", controlId: "maintenance-window", value: "OPS-731: 09:00–09:20 UTC approved maintenance window.", provenance: "demo_fixture", capturedAt, status: "valid" },
