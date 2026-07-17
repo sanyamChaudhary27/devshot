@@ -25,3 +25,34 @@ export {
 export { type RuntimeState, type ScoredRun, applyChoice, createRuntime, scoreRun } from "./runtime";
 export { type ScenarioValidation, type ValidationIssue, isScenarioPublishable, validateScenario } from "./validation";
 export { incidentResponseFixture, laboratorySafetyFixture, laboratorySafetySource } from "./fixtures";
+export {
+  type ControlSeverity,
+  type ControlType,
+  type EvidenceProvenance,
+  type EvidenceRecord,
+  type GateControlResult,
+  type ProposedRelease,
+  type ReleaseGateResult,
+  type ReleasePolicy,
+  type ReleaseReceipt,
+  type RiskSignal,
+  type RunbookControl,
+  analyzeReleaseRisk,
+  citationsForControl,
+  controlSeveritySchema,
+  controlTypeSchema,
+  createReleaseReceipt,
+  evaluateReleaseGate,
+  evidenceProvenanceSchema,
+  evidenceRecordSchema,
+  fingerprintReceipt,
+  proposedReleaseSchema,
+  releasePolicySchema,
+  runbookControlSchema
+} from "./release-gate";
+export {
+  blockedEvidenceFixture,
+  destructiveMigrationFixture,
+  eligibleEvidenceFixture,
+  migrationRunbookFixture
+} from "./runbook-firewall-fixture";

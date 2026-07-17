@@ -1,84 +1,74 @@
 import Link from "next/link";
 
 const proofPoints = [
-  ["01", "Bring the source", "A policy, lesson, or runbook is the factual boundary—not an inspiration prompt."],
-  ["02", "Inspect the choices", "Every decision is connected to evidence, a visible consequence, and a reachable ending."],
-  ["03", "Practice the moment", "The learner plays a fixed, reviewable simulation with no hidden model calls."],
+  ["01", "Compile the runbook", "GPT-5.6 turns prose safeguards into typed controls with source spans."],
+  ["02", "Prove every safeguard", "The release gate matches typed evidence to each cited control."],
+  ["03", "Leave a receipt", "A deterministic verdict and command fingerprint make the decision inspectable."],
 ] as const;
 
 export default function Home() {
   return (
     <main className="marketing-shell">
       <header className="marketing-nav">
-        <Link className="brand" href="/" aria-label="SkillTrials home">
-          <span className="brand-mark" aria-hidden="true">S</span>
-          <span>skill<span>trials</span></span>
+        <Link className="brand" href="/" aria-label="Runbook Firewall home">
+          <span className="brand-mark" aria-hidden="true">R</span>
+          <span>runbook<span>firewall</span></span>
         </Link>
         <nav aria-label="Primary navigation" className="marketing-nav__links">
           <a href="#how-it-works">How it works</a>
-          <Link href="/sample">Sample trial</Link>
-          <Link className="nav-cta" href="/login?next=/create">Create a trial</Link>
+          <Link href="/sample">Release gate demo</Link>
+          <Link className="nav-cta" href="/login?next=/create">Compile a runbook</Link>
         </nav>
       </header>
 
       <section className="marketing-hero" aria-labelledby="hero-title">
         <div className="marketing-hero__copy">
-          <p className="product-kicker"><span aria-hidden="true" />Grounded decision practice</p>
-          <h1 id="hero-title">Can they make the call when the answer is not on the page?</h1>
-          <p className="marketing-hero__lede">SkillTrials turns trusted source material into an evidence-backed decision simulation. Learners commit to a choice, see the operational consequence, and leave with a cited debrief.</p>
+          <p className="product-kicker"><span aria-hidden="true" />Pre-execution release gates</p>
+          <h1 id="hero-title">Prove the safeguards before production pays the price.</h1>
+          <p className="marketing-hero__lede">Runbook Firewall turns the release rules trapped in a team&apos;s runbook into a cited gate. A risky command stays blocked until the operator can show the required proof.</p>
           <div className="marketing-actions">
-            <Link className="ui-action ui-action--primary" href="/sample">Play the 3-minute sample <span aria-hidden="true">→</span></Link>
-            <Link className="ui-action ui-action--ghost" href="/login?next=/create">Build from a source</Link>
+            <Link className="ui-action ui-action--primary" href="/sample">Open the dangerous migration <span aria-hidden="true">→</span></Link>
+            <Link className="ui-action ui-action--ghost" href="/login?next=/create">Compile a runbook</Link>
           </div>
           <ul className="marketing-trust" aria-label="Product guarantees">
-            <li><span aria-hidden="true">✓</span> Cited claims and consequences</li>
-            <li><span aria-hidden="true">✓</span> Deterministic playable runtime</li>
-            <li><span aria-hidden="true">✓</span> Private sources by default</li>
+            <li><span aria-hidden="true">✓</span> Cited release controls</li>
+            <li><span aria-hidden="true">✓</span> Deterministic gate verdict</li>
+            <li><span aria-hidden="true">✓</span> No command execution</li>
           </ul>
         </div>
 
-        <div className="decision-canvas" aria-label="A preview of SkillTrials turning source material into a decision graph">
-          <div className="decision-canvas__chrome"><span /><span /><span /><p>trial / lab-safety / v1</p></div>
+        <div className="decision-canvas" aria-label="A release gate preview">
+          <div className="decision-canvas__chrome"><span /><span /><p>release / payments-api / production</p></div>
           <div className="source-card">
-            <div className="source-card__meta"><span>01</span><span>Trusted source</span></div>
-            <p>“Make sure that the air gauge indicates airflow is within the required range.”</p>
-            <small>OSHA 3407 · cited excerpt</small>
+            <div className="source-card__meta"><span>runbook</span><span>Cited safeguard</span></div>
+            <p>“Record a successful backup identifier before any migration that can delete or rewrite data.”</p>
+            <small>Payments migration runbook · control 03</small>
           </div>
           <div className="decision-flow" aria-hidden="true"><span /></div>
           <div className="decision-node decision-node--active">
-            <span className="node-label">Decision point</span>
-            <strong>The airflow indicator is out of range.</strong>
-            <p>What changes before the transfer starts?</p>
+            <span className="node-label">Proposed command</span>
+            <strong>DROP COLUMN legacy_status</strong>
+            <p>Production migration · destructive schema change</p>
           </div>
           <div className="decision-branches" aria-hidden="true">
-            <div className="decision-branch decision-branch--good"><span>Pause and verify</span><b>+32</b></div>
-            <div className="decision-branch decision-branch--risk"><span>Start anyway</span><b>−35</b></div>
+            <div className="decision-branch decision-branch--risk"><span>Backup receipt</span><b>Missing</b></div>
+            <div className="decision-branch decision-branch--risk"><span>Tested rollback</span><b>Missing</b></div>
           </div>
-          <div className="decision-canvas__footer"><span className="live-dot" aria-hidden="true" /> 2 outcomes reachable · 5 source citations</div>
+          <div className="decision-canvas__footer"><span className="live-dot" aria-hidden="true" /> BLOCKED · 2 safeguards missing</div>
         </div>
       </section>
 
       <section className="marketing-proof" id="how-it-works" aria-labelledby="proof-title">
         <div className="marketing-proof__intro">
-          <p className="product-kicker"><span aria-hidden="true" />Why it is not another quiz generator</p>
-          <h2 id="proof-title">Evidence before confidence.</h2>
-          <p>SkillTrials makes the hidden part of practical understanding visible: the judgement between a source and an action.</p>
+          <p className="product-kicker"><span aria-hidden="true" />Not another runbook chatbot</p>
+          <h2 id="proof-title">A rule must survive the moment it matters.</h2>
+          <p>Runbook Firewall separates interpretation from enforcement: GPT-5.6 compiles the source, while deterministic code owns the release verdict.</p>
         </div>
         <div className="proof-grid">
           {proofPoints.map(([number, title, description]) => (
-            <article className="proof-card" key={number}>
-              <span>{number}</span>
-              <h3>{title}</h3>
-              <p>{description}</p>
-            </article>
+            <article className="proof-card" key={number}><span>{number}</span><h3>{title}</h3><p>{description}</p></article>
           ))}
         </div>
-      </section>
-
-      <section className="marketing-close" aria-labelledby="close-title">
-        <p className="product-kicker"><span aria-hidden="true" />A finished learning artifact</p>
-        <h2 id="close-title">Built for the decision that matters after the reading ends.</h2>
-        <Link className="ui-action ui-action--primary" href="/sample">Open the sample trial <span aria-hidden="true">→</span></Link>
       </section>
     </main>
   );

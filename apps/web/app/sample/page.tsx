@@ -1,10 +1,10 @@
-import { SampleTrial } from "./sample-trial";
+import { ReleaseDesk } from "../release-desk";
 
 export const metadata = {
-  title: "Lab incident command | SkillTrials",
-  description: "A grounded, evidence-backed laboratory incident simulation."
+  title: "Runbook Firewall — release gate demo",
+  description: "A cited, deterministic pre-execution release gate for risky production changes."
 };
 
 export default function SamplePage() {
-  return <SampleTrial />;
+  return <ReleaseDesk />;
 }

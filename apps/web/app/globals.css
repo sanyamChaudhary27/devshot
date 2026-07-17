@@ -189,6 +189,66 @@ a { color: inherit; }
 .counterfactual li > span { color: var(--amber); font-family: "Courier New", monospace; font-size: .67rem; letter-spacing: .05em; text-transform: uppercase; }
 .counterfactual li > p { color: var(--muted); font-size: .8rem; line-height: 1.5; margin: 0; }
 
+/* Runbook Firewall */
+.firewall-shell { margin: 0 auto; max-width: 1180px; min-height: 100vh; padding: 24px; }
+.firewall-nav { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 10px 0 18px; }
+.firewall-nav__status { color: var(--subtle); font-family: "Courier New", monospace; font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; }
+.release-brief { align-items: end; border-bottom: 1px solid var(--line); display: grid; gap: 36px; grid-template-columns: minmax(0, 1fr) 330px; padding: 52px 0 29px; }
+.release-brief h1 { font-size: clamp(3rem, 6vw, 5.8rem); letter-spacing: -.085em; line-height: .9; margin: 14px 0 17px; }
+.release-brief > div > p:last-child { color: var(--muted); font-size: 1.05rem; line-height: 1.7; margin: 0; max-width: 62ch; }
+.verdict { border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 10px; padding: 18px; }
+.verdict--eligible { border-left-color: var(--mint); }
+.verdict > span, .verdict strong { display: block; font-family: "Courier New", monospace; text-transform: uppercase; }
+.verdict > span { color: var(--subtle); font-size: .66rem; letter-spacing: .08em; }
+.verdict strong { color: var(--amber); font-size: 1.8rem; letter-spacing: .05em; margin-top: 8px; }
+.verdict--eligible strong { color: var(--mint); }
+.verdict p { color: var(--muted); font-size: .82rem; line-height: 1.5; margin: 8px 0 0; }
+.release-workspace { align-items: start; display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr) 300px; padding: 30px 0 72px; }
+.release-main { display: grid; gap: 18px; }
+.command-card, .control-ledger, .release-rail > section, .receipt { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 23px; }
+.section-heading { align-items: start; display: flex; gap: 18px; justify-content: space-between; }
+.section-heading .eyebrow { margin: 0; }
+.section-heading h2, .release-rail h2, .receipt h2 { font-size: 1.22rem; letter-spacing: -.035em; line-height: 1.15; margin: 7px 0 0; }
+.section-heading > span { color: var(--subtle); font-family: "Courier New", monospace; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
+.command-card > code { background: #0b1323; border: 1px solid #2c3b58; border-radius: 7px; color: #dce9fb; display: block; font-family: "Courier New", monospace; font-size: .83rem; line-height: 1.55; margin-top: 19px; overflow-wrap: anywhere; padding: 13px; }
+.command-card > p { color: var(--muted); font-size: .9rem; line-height: 1.55; margin: 14px 0; }
+.command-card pre { background: #080f1c; border-radius: 7px; color: #bcd6e8; font-size: .79rem; margin: 0; overflow-x: auto; padding: 13px; }
+.risk-strip { border: 1px solid var(--line); border-radius: 12px; padding: 17px; }
+.risk-strip .eyebrow { margin: 0; }
+.risk-strip ul { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 12px 0 0; padding: 0; }
+.risk-pill { border: 1px solid #394862; border-radius: 7px; display: grid; gap: 3px; padding: 9px; }
+.risk-pill strong { color: #dce6f6; font-size: .76rem; }
+.risk-pill span { color: var(--subtle); font-size: .7rem; line-height: 1.35; max-width: 230px; }
+.risk-pill--high { border-color: rgba(239, 125, 112, .7); }
+.risk-pill--medium { border-color: rgba(242, 192, 102, .65); }
+.control-ledger > ol { display: grid; gap: 10px; list-style: none; margin: 20px 0 0; padding: 0; }
+.control-row { border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: 8px; display: grid; gap: 14px; grid-template-columns: 74px minmax(0, 1fr); padding: 14px; }
+.control-row--satisfied { border-left-color: var(--mint); }
+.control-row__state { display: grid; align-content: start; gap: 5px; }
+.control-row__state span, .control-row__state small { font-family: "Courier New", monospace; font-size: .64rem; letter-spacing: .06em; text-transform: uppercase; }
+.control-row--satisfied .control-row__state span { color: var(--mint); }
+.control-row--missing .control-row__state span, .control-row--invalid .control-row__state span { color: var(--amber); }
+.control-row__state small { color: var(--subtle); }
+.control-row__body h3 { color: #e3ebf8; font-size: .95rem; margin: 0; }
+.control-row__body > p { color: var(--muted); font-size: .83rem; line-height: 1.5; margin: 6px 0 0; }
+.control-row blockquote { border-left: 1px solid #53637f; color: #bac8da; font-size: .78rem; line-height: 1.5; margin: 12px 0 0; padding-left: 10px; }
+.control-row blockquote span { color: var(--mint); display: block; font-family: "Courier New", monospace; font-size: .65rem; letter-spacing: .06em; margin-bottom: 3px; text-transform: uppercase; }
+.control-row__reason { color: #d7e1ec !important; }
+.control-row__evidence strong { color: var(--mint); }
+.control-row__evidence em { color: var(--subtle); font-family: "Courier New", monospace; font-size: .65rem; font-style: normal; letter-spacing: .05em; text-transform: uppercase; }
+.release-rail { display: grid; gap: 13px; position: sticky; top: 18px; }
+.release-rail > section p { color: var(--muted); font-size: .82rem; line-height: 1.55; margin: 12px 0 0; }
+.release-rail .eyebrow { margin: 0; }
+.release-rail .ui-action { justify-content: center; width: 100%; }
+.text-action { background: transparent; border: 0; color: var(--muted); cursor: pointer; font: inherit; font-size: .8rem; padding: 3px; text-align: left; text-decoration: underline; text-underline-offset: 4px; }
+.provenance-note { color: var(--subtle); font-size: .74rem; line-height: 1.55; margin: 0; }
+.provenance-note strong { color: #ccd7e7; font-family: "Courier New", monospace; font-size: .66rem; letter-spacing: .05em; text-transform: uppercase; }
+.receipt { border-left: 3px solid var(--mint); }
+.receipt dl { display: grid; gap: 12px; margin: 18px 0 0; }
+.receipt dl div { display: grid; gap: 4px; }
+.receipt dt { color: var(--subtle); font-family: "Courier New", monospace; font-size: .63rem; letter-spacing: .06em; text-transform: uppercase; }
+.receipt dd { color: #d8e4f2; font-family: "Courier New", monospace; font-size: .7rem; line-height: 1.45; margin: 0; overflow-wrap: anywhere; }
+
 /* Author, sign-in, and states */
 .home-shell, .create-shell, .login-shell, .dashboard-shell { margin: 0 auto; max-width: 1120px; min-height: 100vh; padding: 24px; }
 .home-topbar, .create-topbar { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 10px 0 18px; }
@@ -256,12 +316,13 @@ a { color: inherit; }
   .marketing-hero { grid-template-columns: 1fr; padding-top: 68px; }
   .marketing-hero h1 { max-width: 12ch; }
   .decision-canvas { max-width: 570px; width: 100%; }
-  .trial-grid, .player-layout { grid-template-columns: 1fr; }
+  .trial-grid, .player-layout, .release-brief, .release-workspace { grid-template-columns: 1fr; }
   .create-workspace { grid-template-columns: 1fr; }
   .create-guide { position: static; }
   .trial-grid { min-height: auto; }
   .metric-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metric-rail h2 { grid-column: 1 / -1; }
+  .release-rail { position: static; }
 }
 @media (max-width: 680px) {
   .marketing-shell { padding: 0 18px 42px; }
@@ -277,6 +338,11 @@ a { color: inherit; }
   .proof-grid, .debrief-grid { gap: 10px; }
   .proof-card h3 { margin-top: 27px; }
   .trial-shell, .home-shell, .create-shell, .login-shell, .dashboard-shell { padding: 18px; }
+  .firewall-shell { padding: 18px; }
+  .firewall-nav { align-items: flex-start; gap: 12px; }
+  .firewall-nav__status { text-align: right; }
+  .control-row { grid-template-columns: 1fr; }
+  .control-row__state { grid-template-columns: auto auto; justify-content: start; }
   .trial-topbar .trial-type { display: none; }
   .trial-heading { font-size: clamp(3rem, 14vw, 4.3rem); }
   .metric-rail { grid-template-columns: 1fr; }
