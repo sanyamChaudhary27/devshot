@@ -1,8 +1,8 @@
 import { SampleTrial } from "./sample-trial";
 
 export const metadata = {
-  title: "The fume hood check | SkillTrials",
-  description: "A grounded laboratory-safety decision simulation."
+  title: "Lab incident command | SkillTrials",
+  description: "A grounded, evidence-backed laboratory incident simulation."
 };
 
 export default function SamplePage() {
